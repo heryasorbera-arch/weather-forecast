@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توقعات الطقس في مصر</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            color: #fff;
+            margin: 0;
+            padding: 40px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .expert-name {
+            color: rgb(255, 215, 0);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 900;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            letter-spacing: 2px;
+        }
+        h1 {
+            color: rgb(255, 215, 0);
+            margin-bottom: 20px;
+            font-size: 3em;
+            font-weight: 900;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            letter-spacing: 2px;
+        }
+        #search-container {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            justify-content: center;
+        }
+        #city-input {
+            width: 70%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        #search-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: none;
+            background-color: #ffc107;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #search-button:hover {
+            background-color: #ffca2c;
+        }
+        #weather-forecast {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 90%;
+            max-width: 1200px;
+        }
+        .weather-day {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .weather-day h3 {
+            font-size: 1.5em;
+            color: #fff;
+            margin: 0 0 15px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        .hourly-forecast {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+        }
+        .hourly-forecast::-webkit-scrollbar {
+            height: 8px;
+        }
+        .hourly-forecast::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+        .weather-hour {
+            min-width: 80px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .weather-hour p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        .weather-hour img {
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="expert-name">خبير الأرصاد الجوية عمرو عاشور</div>
+    <h1>توقعات الطقس في مصر</h1>
+
+    <div id="search-container">
+        <input type="text" id="city-input" placeholder="ادخل اسم المدينة" list="cities-list">
+        <datalist id="cities-list">
+            <option value="القاهرة">
+            <option value="الجيزة">
+            <option value="الإسكندرية">
+            <option value="أسوان">
+            <option value="الأقصر">
+            <option value="الغردقة">
+            <option value="شرم الشيخ">
+            <option value="بورسعيد">
+            <option value="السويس">
+            <option value="الفيوم">
+            <option value="المنيا">
+        </datalist>
+        <button id="search-button">بحث</button>
+    </div>
+
+    <div id="weather-forecast">
+        <p style="color: #fff;">جاري تحميل بيانات الطقس...</p>
+    </div>
+
+    <script>
+        const apiKey = '36b796bfb5d54c68aa8230421250908';
+        
+        async function getWeather(city) {
+            const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=10&lang=ar`;
+            
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('فشل جلب بيانات الطقس:', data.error.message);
+                    document.getElementById('weather-forecast').innerHTML = `<p style="color: #fff;">حدث خطأ: ${data.error.message}</p>`;
+                    return;
+                }
+                
+                document.querySelector('h1').innerHTML = `توقعات الطقس في ${data.location.name}`;
+
+                let dailyForecastHtml = '';
+                const forecastDays = data.forecast.forecastday;
+                for (let i = 0; i < forecastDays.length; i++) {
+                    const dayData = forecastDays[i];
+                    const date = new Date(dayData.date).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'short' });
+                    
+                    let hourlyHtml = '';
+                    const hourlyForecast = dayData.hour;
+                    for (let j = 0; j < hourlyForecast.length; j++) {
+                        const hourData = hourlyForecast[j];
+                        const time = new Date(hourData.time).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                        const temp = Math.round(hourData.temp_c);
+                        const iconUrl = hourData.condition.icon;
+                        const description = hourData.condition.text;
+
+                        hourlyHtml += `
+                            <div class="weather-hour">
+                                <p>${time}</p>
+                                <img src="${iconUrl}" alt="${description}">
+                                <p>${temp}°C</p>
+                            </div>
+                        `;
+                    }
+
+                    const chanceOfRain = dayData.day.daily_chance_of_rain;
+                    const chanceOfSnow = dayData.day.daily_chance_of_snow;
+                    const dayDescription = dayData.day.condition.text;
+                    let stormInfo = '';
+                    if (dayDescription.includes('عواصف') || dayDescription.includes('رعدية')) {
+                         stormInfo = `<p style="color: yellow; font-weight: bold;">⚠️ توقعات عواصف رعدية!</p>`;
+                    }
+
+                    dailyForecastHtml += `
+                        <div class="weather-day">
+                            <h3>${date}</h3>
+                            ${stormInfo}
+                            <p>فرصة أمطار: ${chanceOfRain}%</p>
+                            <p>فرصة ثلوج: ${chanceOfSnow}%</p>
+                            <div class="hourly-forecast">
+                                ${hourlyHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+                document.getElementById('weather-forecast').innerHTML = dailyForecastHtml;
+
+            } catch (error) {
+                console.error('فشل جلب بيانات الطقس:', error);
+                document.getElementById('weather-forecast').innerHTML = '<p style="color: #fff;">حدث خطأ في الاتصال بالخدمة. تأكد من اتصالك بالإنترنت.</p>';
+            }
+        }
+
+        function loadWeatherForCity() {
+            const city = document.getElementById('city-input').value || 'القاهرة';
+            getWeather(city);
+        }
+
+        document.getElementById('search-button').addEventListener('click', loadWeatherForCity);
+        document.getElementById('city-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                loadWeatherForCity();
+            }
+        });
+
+        loadWeatherForCity();
+
+        function scheduleDailyUpdate() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const timeToMidnight = tomorrow.getTime() - now.getTime();
+            
+            setTimeout(() => {
+                loadWeatherForCity();
+                setInterval(loadWeatherForCity, 24 * 60 * 60 * 1000);
+            }, timeToMidnight);
+        }
+
+        scheduleDailyUpdate();
+    </script>
+</body>
+</html>

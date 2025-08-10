@@ -126,6 +126,20 @@
             width: 40px;
             height: 40px;
         }
+        .radar-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 600px;
+            margin-top: 40px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .radar-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -155,6 +169,10 @@
         <p style="color: #fff;">جاري تحميل بيانات الطقس...</p>
     </div>
 
+    <div class="radar-container" id="radar-map">
+        <p style="color: #fff; padding-top: 20px;">جاري تحميل خريطة الرادار...</p>
+    </div>
+
     <script>
         const apiKey = '36b796bfb5d54c68aa8230421250908';
         
@@ -173,6 +191,15 @@
                 
                 document.querySelector('h1').innerHTML = `توقعات الطقس في ${data.location.name}`;
 
+                // تحديث خريطة الرادار
+                const lat = data.location.lat;
+                const lon = data.location.lon;
+                const radarIframe = `
+                    <iframe src="https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=5&level=surface&overlay=rain&menu=false&message=true&marker=false&calendar=now&pressure=false&type=map&location=coordinates&detail=false&metric_uv_index=true&metric_temp=true&metric_wind=true" frameborder="0"></iframe>
+                `;
+                document.getElementById('radar-map').innerHTML = radarIframe;
+
+
                 let dailyForecastHtml = '';
                 const forecastDays = data.forecast.forecastday;
                 for (let i = 0; i < forecastDays.length; i++) {
@@ -185,7 +212,7 @@
                         const hourData = hourlyForecast[j];
                         const time = new Date(hourData.time).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
                         const temp = Math.round(hourData.temp_c);
-                        const iconUrl = hourData.condition.icon;
+                        const iconUrl = `https:${hourData.condition.icon}`; 
                         const description = hourData.condition.text;
 
                         hourlyHtml += `
@@ -196,6 +223,9 @@
                             </div>
                         `;
                     }
+
+                    const maxTemp = Math.round(dayData.day.maxtemp_c);
+                    const minTemp = Math.round(dayData.day.mintemp_c);
 
                     const chanceOfRain = dayData.day.daily_chance_of_rain;
                     const chanceOfSnow = dayData.day.daily_chance_of_snow;
@@ -208,6 +238,7 @@
                     dailyForecastHtml += `
                         <div class="weather-day">
                             <h3>${date}</h3>
+                            <p>الحرارة: ${maxTemp}°C / ${minTemp}°C</p>
                             ${stormInfo}
                             <p>فرصة أمطار: ${chanceOfRain}%</p>
                             <p>فرصة ثلوج: ${chanceOfSnow}%</p>

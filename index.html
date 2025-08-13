@@ -11,102 +11,171 @@
     
     <style>
         :root {
-            --primary-color: #ffc107;
-            --secondary-color: #2193b0;
-            --background-color: #121212;
+            /* Futuristic Cosmic Palette */
+            --primary-color: #ffc107; /* Bright Gold */
+            --secondary-color: #2193b0; /* Deep Blue */
+            --background-start: #0a0d14; /* Dark Navy */
+            --background-end: #1d212b; /* Dark Charcoal */
             --card-background: rgba(255, 255, 255, 0.05);
             --text-color: #e0e0e0;
             --border-color: rgba(255, 255, 255, 0.1);
-            --shadow-color: rgba(0, 0, 0, 0.4);
+            --shadow-color: rgba(0, 0, 0, 0.8);
+            --glow-color: rgba(255, 193, 7, 0.4);
+            --selected-glow: rgba(33, 147, 176, 0.5);
         }
-        
+
         body {
             font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, var(--background-color), #000000);
+            background: radial-gradient(circle at top left, var(--background-start) 0%, var(--background-end) 100%);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            line-height: 1.6;
+            line-height: 1.7;
+            letter-spacing: 0.5px;
+            perspective: 1000px;
+        }
+
+        #current-weather {
+            width: 90%;
+            max-width: 1200px;
+            background: linear-gradient(135deg, rgba(33, 147, 176, 0.2), rgba(255, 193, 7, 0.2));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column; /* Changed to column for better stacking on mobile */
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(33, 147, 176, 0.2);
+            transition: all 0.4s ease;
+        }
+        
+        @media (min-width: 768px) {
+            #current-weather {
+                flex-direction: row; /* Back to row on larger screens */
+            }
+        }
+
+        #current-weather:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 30px var(--glow-color);
+        }
+        
+        #current-weather h3 {
+            font-size: 2.5em;
+            margin: 0;
+            color: var(--primary-color);
+            font-weight: 900;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+        
+        #current-weather p {
+            font-size: 1.5em;
+            margin: 0;
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        #current-weather img {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 0 5px var(--primary-color));
+            transition: transform 0.5s ease;
         }
         
         .expert-name {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            font-weight: 900;
-            text-shadow: 3px 3px 6px var(--shadow-color);
-            padding: 10px 20px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            letter-spacing: 2px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-        
-        .expert-name:hover {
-            transform: scale(1.05);
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 30px;
             font-size: 3em;
             font-weight: 900;
-            text-shadow: 3px 3px 6px var(--shadow-color);
-            padding: 10px 20px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 5px var(--shadow-color);
+            background-image: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: textGlow 2s infinite alternate;
+        }
+        
+        h1 {
+            font-size: 4em;
+            font-weight: 900;
+            margin-bottom: 30px;
+            padding: 10px;
             letter-spacing: 2px;
-            border: 1px solid var(--border-color);
+            text-shadow: 3px 3px 8px var(--shadow-color);
+            background-image: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            transition: all 0.5s ease;
+        }
+        
+        h2 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            text-shadow: 1px 1px 5px rgba(33, 147, 176, 0.3);
         }
 
         #search-container {
             margin-bottom: 40px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             justify-content: center;
             animation: fadeIn 1s ease-in-out;
         }
         
         #city-input {
             width: 70%;
-            padding: 12px;
-            font-size: 1em;
-            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.1em;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
             background-color: var(--card-background);
             color: var(--text-color);
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.1);
         }
         
         #city-input:focus {
             outline: none;
             border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--glow-color);
+            transform: scale(1.02);
         }
 
         #search-button {
-            padding: 12px 25px;
-            font-size: 1em;
-            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 12px;
             border: none;
-            background-color: var(--primary-color);
-            color: var(--background-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-start);
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--shadow-color);
         }
         
         #search-button:hover {
-            background-color: #ffca2c;
-            transform: translateY(-2px);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--glow-color), 0 5px 25px rgba(33, 147, 176, 0.4);
         }
 
         #weather-forecast {
@@ -119,71 +188,96 @@
 
         #daily-forecast-list {
             display: flex;
-            gap: 15px;
-            justify-content: flex-start; /* تغيير مهم لضمان ظهور كل الأيام */
+            gap: 20px;
+            justify-content: flex-start;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding: 20px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+            scrollbar-color: var(--primary-color) transparent;
         }
         
         #daily-forecast-list::-webkit-scrollbar {
-            height: 8px;
+            height: 10px;
         }
         
         #daily-forecast-list::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: var(--primary-color);
             border-radius: 10px;
         }
-
+        
         .weather-day {
             background-color: var(--card-background);
-            border-radius: 15px;
-            padding: 20px;
-            min-width: 150px;
-            cursor: pointer;
-            box-shadow: 0 8px 16px var(--shadow-color);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 25px;
+            min-width: 180px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--shadow-color);
             border: 1px solid var(--border-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            flex-shrink: 0; /* إضافة مهمة لمنع العناصر من الانكماش */
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+            flex-shrink: 0;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateY(0deg);
         }
         
         .weather-day:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px var(--shadow-color);
+            transform: perspective(1000px) rotateY(5deg);
+            box-shadow: 
+                0 0 25px var(--glow-color),
+                0 12px 28px rgba(33, 147, 176, 0.4);
+            border-color: var(--primary-color);
+        }
+
+        .weather-day.selected {
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 0 20px var(--selected-glow);
+            transform: translateY(-8px) perspective(1000px) rotateY(0deg) scale(1.05);
         }
 
         .weather-day h3 {
-            font-size: 1.2em;
+            font-size: 1.3em;
             color: var(--primary-color);
-            margin: 0 0 10px;
-            text-shadow: 1px 1px 2px var(--shadow-color);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
+            margin: 0 0 15px;
+            text-shadow: 1px 1px 3px var(--shadow-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
         }
         
         .weather-day p {
-            margin: 5px 0;
-            font-size: 1em;
+            margin: 8px 0;
+            font-size: 1.1em;
+            font-weight: 700;
         }
         
         .weather-day img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
+            transition: transform 0.5s ease;
+        }
+        
+        .weather-day:hover img {
+            transform: scale(1.2) rotate(15deg);
         }
 
         .hourly-forecast-container {
-            margin-top: 25px;
+            margin-top: 30px;
             background-color: var(--card-background);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px var(--shadow-color);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px var(--shadow-color);
             border: 1px solid var(--border-color);
             display: none;
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.8s ease-in-out;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        .hourly-forecast-container:hover {
+            transform: perspective(1000px) rotateX(-2deg);
         }
         
         .hourly-forecast-container.active {
@@ -193,44 +287,47 @@
         .hourly-forecast {
             display: flex;
             overflow-x: auto;
-            gap: 15px;
-            padding-bottom: 10px;
+            gap: 20px;
+            padding: 15px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+            scrollbar-color: var(--secondary-color) transparent;
         }
         
         .hourly-forecast::-webkit-scrollbar {
-            height: 8px;
+            height: 10px;
         }
         
         .hourly-forecast::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: var(--secondary-color);
             border-radius: 10px;
         }
 
         .weather-hour {
-            min-width: 90px;
+            min-width: 100px;
             text-align: center;
             background-color: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 12px;
-            transition: background-color 0.3s ease;
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
         }
         
         .weather-hour:hover {
             background-color: rgba(255, 255, 255, 0.15);
+            transform: translateZ(10px) scale(1.05);
         }
 
         .weather-hour p {
             margin: 5px 0;
-            font-size: 1em;
+            font-size: 1.1em;
             font-weight: 700;
         }
         
         .weather-hour img {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
         }
         
         .radar-container {
@@ -242,11 +339,12 @@
             overflow: hidden;
             box-shadow: 0 8px 16px var(--shadow-color);
             border: 1px solid var(--border-color);
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
         
         .radar-container:hover {
             transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(33, 147, 176, 0.5), 0 8px 20px var(--shadow-color);
         }
 
         .radar-container iframe {
@@ -257,7 +355,12 @@
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
-            to   { opacity: 1; transform: translateY(0); }
+            to  { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes textGlow {
+            0% { text-shadow: 2px 2px 5px var(--shadow-color); }
+            100% { text-shadow: 0 0 15px rgba(255, 193, 7, 0.7), 0 0 20px rgba(33, 147, 176, 0.5); }
         }
     </style>
 </head>
@@ -266,6 +369,19 @@
     <div class="expert-name">خبير الأرصاد الجوية عمرو عاشور</div>
     <h1>توقعات الطقس في مصر</h1>
 
+    <div id="current-weather">
+        <img id="current-icon" src="" alt="حالة الطقس">
+        <div class="current-details">
+            <h3 id="current-temp">--°C</h3>
+            <p id="current-condition">جاري التحميل...</p>
+        </div>
+        <div class="current-extra-details">
+            <p id="current-feels-like">الحرارة المحسوسة: --°C</p>
+            <p id="current-humidity">الرطوبة: --%</p>
+            <p id="current-wind">الرياح: -- كم/ساعة</p>
+        </div>
+    </div>
+    
     <div id="search-container">
         <input type="text" id="city-input" placeholder="ادخل اسم المدينة" list="cities-list">
         <datalist id="cities-list">
@@ -288,6 +404,7 @@
         <p style="color: var(--text-color);">جاري تحميل بيانات الطقس...</p>
     </div>
 
+    <h2>خريطة الرادار المباشر</h2>
     <div class="radar-container" id="radar-map">
         <p style="color: var(--text-color); padding-top: 20px;">جاري تحميل خريطة الرادار...</p>
     </div>
@@ -309,12 +426,15 @@
                     return;
                 }
                 
-                document.querySelector('h1').innerHTML = `توقعات الطقس في ${data.location.name}`;
+                // تم التعديل هنا لإضافة اسم الدولة
+                document.querySelector('h1').innerHTML = `توقعات الطقس في ${data.location.name}, ${data.location.country}`;
                 currentCityData = data;
+                displayCurrentWeather();
                 displayDailyForecast();
                 
                 const lat = data.location.lat;
                 const lon = data.location.lon;
+                
                 const radarIframe = `
                     <iframe src="https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=5&level=surface&overlay=rain&menu=false&message=true&marker=false&calendar=now&pressure=false&type=map&location=coordinates&detail=false&metric_uv_index=true&metric_temp=true&metric_wind=true" frameborder="0"></iframe>
                 `;
@@ -324,6 +444,24 @@
                 console.error('فشل جلب بيانات الطقس:', error);
                 document.getElementById('weather-forecast').innerHTML = '<p style="color: var(--text-color);">حدث خطأ في الاتصال بالخدمة. تأكد من اتصالك بالإنترنت.</p>';
             }
+        }
+
+        function displayCurrentWeather() {
+            if (!currentCityData) return;
+            const current = currentCityData.current;
+            const currentTemp = Math.round(current.temp_c);
+            const feelsLike = Math.round(current.feelslike_c);
+            const conditionText = current.condition.text;
+            const conditionIcon = `https:${current.condition.icon}`;
+            const humidity = current.humidity;
+            const windSpeed = Math.round(current.wind_kph);
+
+            document.getElementById('current-temp').innerText = `${currentTemp}°C`;
+            document.getElementById('current-condition').innerText = conditionText;
+            document.getElementById('current-icon').src = conditionIcon;
+            document.getElementById('current-feels-like').innerText = `الحرارة المحسوسة: ${feelsLike}°C`;
+            document.getElementById('current-humidity').innerText = `الرطوبة: ${humidity}%`;
+            document.getElementById('current-wind').innerText = `الرياح: ${windSpeed} كم/ساعة`;
         }
 
         function displayDailyForecast() {
@@ -355,6 +493,7 @@
             attachDayClickHandlers();
             
             displayHourlyForecast(0);
+            document.querySelector('.weather-day[data-day-index="0"]').classList.add('selected');
         }
 
         function attachDayClickHandlers() {
@@ -362,6 +501,8 @@
             dayCards.forEach(card => {
                 card.addEventListener('click', () => {
                     const index = card.getAttribute('data-day-index');
+                    dayCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
                     displayHourlyForecast(index);
                 });
             });
@@ -399,18 +540,50 @@
             const minTemp = Math.round(dayData.day.mintemp_c);
             const chanceOfRain = dayData.day.daily_chance_of_rain;
             const chanceOfSnow = dayData.day.daily_chance_of_snow;
-            const dayDescription = dayData.day.condition.text;
+            const humidity = dayData.day.avghumidity;
+            const uvIndex = dayData.day.uv;
             
-            let stormInfo = '';
-            if (dayDescription.includes('عواصف') || dayDescription.includes('رعدية')) {
-                 stormInfo = `<p style="color: #ffea00; font-weight: bold;">⚠️ توقعات عواصف رعدية!</p>`;
+            const totalPrecipitation = dayData.day.totalprecip_mm;
+            let precipInfo = '';
+            if (totalPrecipitation > 0) {
+                precipInfo = `<p>كمية الأمطار: ${totalPrecipitation} ملم</p>`;
             }
+
+            const maxWindKph = dayData.day.maxwind_kph;
+            const windDirection = dayData.day.maxwind_dir;
+            let windInfo = '';
+            if (maxWindKph > 0) {
+                let windDirectionText = '';
+                if (windDirection) {
+                    windDirectionText = `(${windDirection})`;
+                }
+                windInfo = `<p>أقصى سرعة رياح: ${Math.round(maxWindKph)} كم/ساعة ${windDirectionText}</p>`;
+            }
+
+            const chanceOfThunder = dayData.day.daily_chance_of_thunder;
+            let thunderInfo = '';
+            if (chanceOfThunder > 0) {
+                thunderInfo = `<p>احتمالية عواصف رعدية: ${chanceOfThunder}%</p>`;
+            }
+
+            const conditionCode = dayData.day.condition.code;
+            const thunderstormCodes = [1087, 1273, 1276, 1279, 1282];
+            let stormInfo = '';
+            if (thunderstormCodes.includes(conditionCode)) {
+                stormInfo = `<p style="color: #ffea00; font-weight: bold;">⚠️ تحذير: توقعات عواصف رعدية!</p>`;
+            }
+
 
             const fullDayHtml = `
                 <div class="hourly-forecast-container active">
                     <h3>تفاصيل اليوم: ${new Date(dayData.date).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'short' })}</h3>
                     <p>الحرارة: ${maxTemp}°C / ${minTemp}°C</p>
+                    <p>الرطوبة: ${humidity}%</p>
+                    <p>مؤشر الأشعة فوق البنفسجية: ${uvIndex}</p>
                     ${stormInfo}
+                    ${windInfo}
+                    ${precipInfo}
+                    ${thunderInfo}
                     <p>فرصة أمطار: ${chanceOfRain}%</p>
                     <p>فرصة ثلوج: ${chanceOfSnow}%</p>
                     <div class="hourly-forecast">
@@ -422,8 +595,23 @@
         }
 
         function loadWeatherForCity() {
-            const city = document.getElementById('city-input').value || 'القاهرة';
-            getWeather(city);
+            const city = document.getElementById('city-input').value;
+            if (city) {
+                getWeather(city);
+            } else {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        getWeather(`${lat},${lon}`);
+                    }, error => {
+                        console.error("Geolocation failed, loading Cairo by default.");
+                        getWeather('القاهرة');
+                    });
+                } else {
+                    getWeather('القاهرة');
+                }
+            }
         }
 
         document.getElementById('search-button').addEventListener('click', loadWeatherForCity);

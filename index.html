@@ -50,7 +50,7 @@
             padding: 30px;
             margin-bottom: 30px;
             display: flex;
-            flex-direction: column; /* Changed to column for better stacking on mobile */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 25px;
@@ -61,7 +61,7 @@
         
         @media (min-width: 768px) {
             #current-weather {
-                flex-direction: row; /* Back to row on larger screens */
+                flex-direction: row;
             }
         }
 
@@ -86,9 +86,9 @@
         }
 
         #current-weather img {
-            width: 60px;
-            height: 60px;
-            filter: drop-shadow(0 0 5px var(--primary-color));
+            width: 80px; /* Increased size for better visibility */
+            height: 80px; /* Increased size for better visibility */
+            filter: drop-shadow(0 0 8px var(--primary-color)); /* Enhanced glow */
             transition: transform 0.5s ease;
         }
         
@@ -252,8 +252,8 @@
         }
         
         .weather-day img {
-            width: 60px;
-            height: 60px;
+            width: 70px; /* Increased size for daily icons */
+            height: 70px; /* Increased size for daily icons */
             transition: transform 0.5s ease;
         }
         
@@ -326,8 +326,8 @@
         }
         
         .weather-hour img {
-            width: 50px;
-            height: 50px;
+            width: 60px; /* Increased size for hourly icons */
+            height: 60px; /* Increased size for hourly icons */
         }
         
         .radar-container {
@@ -367,7 +367,7 @@
 <body>
 
     <div class="expert-name">خبير الأرصاد الجوية عمرو عاشور</div>
-    <h1>توقعات الطقس في مصر</h1>
+    <h1>توقعات الطقس في القاهرة، مصر</h1>
 
     <div id="current-weather">
         <img id="current-icon" src="" alt="حالة الطقس">
@@ -410,30 +410,55 @@
     </div>
 
     <script>
-        const apiKey = '36b796bfb5d54c68aa8230421250908';
+        const apiKey = 'U96FMR7DGZSJEF8H8R7B8AX3C';
         let currentCityData = null;
 
+        // تم تحديث الأيقونات هنا لصور SVG عالية الجودة وجذابة
+        const iconMapping = {
+            'clear-day': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/day.svg', // شمس ساطعة
+            'clear-night': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/night.svg', // قمر ونجوم
+            'cloudy': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/cloudy.svg', // غيوم كثيفة
+            'partly-cloudy-day': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/cloudy-day-1.svg', // شمس وغيوم خفيفة (نهار)
+            'partly-cloudy-night': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/cloudy-night-1.svg', // قمر وغيوم خفيفة (ليل)
+            'rain': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/rainy-6.svg', // أمطار غزيرة
+            'showers-day': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/rainy-3.svg', // أمطار خفيفة (نهار)
+            'showers-night': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/rainy-5.svg', // أمطار خفيفة (ليل)
+            'thunderstorm': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/thunder.svg', // رعد وبرق
+            'thunderstorm-day': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/thunder.svg', // رعد وبرق (نهار)
+            'thunderstorm-night': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/thunder.svg', // رعد وبرق (ليل)
+            'snow': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/snowy-6.svg', // ثلج غزير
+            'snow-showers-day': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/snowy-3.svg', // ثلج خفيف (نهار)
+            'snow-showers-night': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/snowy-5.svg', // ثلج خفيف (ليل)
+            'fog': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/cloudy.svg', // ضباب (نستخدم أيقونة الغيوم)
+            'wind': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/weather.svg', // رياح (نستخدم أيقونة عامة للطقس)
+            'hail': 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/rainy-7.svg' // برد (نستخدم أيقونة أمطار مع تعديل بسيط)
+        };
+
+        function getCustomWeatherIcon(vcIcon) {
+            return iconMapping[vcIcon] || 'https://www.amcharts.com/wp-content/uploads/assets/weather/animated/cloudy.svg'; // أيقونة افتراضية للغيوم
+        }
+
         async function getWeather(city) {
-            const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=10&lang=ar`;
+            const apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/next10days?unitGroup=metric&key=${apiKey}&contentType=json&lang=ar`;
             
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
-                if (data.error) {
-                    console.error('فشل جلب بيانات الطقس:', data.error.message);
-                    document.getElementById('weather-forecast').innerHTML = `<p style="color: var(--text-color);">حدث خطأ: ${data.error.message}</p>`;
+                if (data.errorCode) {
+                    console.error('فشل جلب بيانات الطقس:', data.message);
+                    document.getElementById('weather-forecast').innerHTML = `<p style="color: var(--text-color);">حدث خطأ: ${data.message}</p>`;
                     return;
                 }
                 
-                // تم التعديل هنا لإضافة اسم الدولة
-                document.querySelector('h1').innerHTML = `توقعات الطقس في ${data.location.name}, ${data.location.country}`;
+                // تعديل هنا لعرض اسم المدينة واسم الدولة
+                document.querySelector('h1').innerHTML = `توقعات الطقس في ${data.resolvedAddress}`;
                 currentCityData = data;
                 displayCurrentWeather();
                 displayDailyForecast();
                 
-                const lat = data.location.lat;
-                const lon = data.location.lon;
+                const lat = data.latitude;
+                const lon = data.longitude;
                 
                 const radarIframe = `
                     <iframe src="https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=5&level=surface&overlay=rain&menu=false&message=true&marker=false&calendar=now&pressure=false&type=map&location=coordinates&detail=false&metric_uv_index=true&metric_temp=true&metric_wind=true" frameborder="0"></iframe>
@@ -447,14 +472,14 @@
         }
 
         function displayCurrentWeather() {
-            if (!currentCityData) return;
-            const current = currentCityData.current;
-            const currentTemp = Math.round(current.temp_c);
-            const feelsLike = Math.round(current.feelslike_c);
-            const conditionText = current.condition.text;
-            const conditionIcon = `https:${current.condition.icon}`;
+            if (!currentCityData || !currentCityData.currentConditions) return;
+            const current = currentCityData.currentConditions;
+            const currentTemp = Math.round(current.temp);
+            const feelsLike = Math.round(current.feelslike);
+            const conditionText = current.conditions;
+            const conditionIcon = getCustomWeatherIcon(current.icon); // استخدام الأيقونات الجديدة
             const humidity = current.humidity;
-            const windSpeed = Math.round(current.wind_kph);
+            const windSpeed = Math.round(current.windspeed);
 
             document.getElementById('current-temp').innerText = `${currentTemp}°C`;
             document.getElementById('current-condition').innerText = conditionText;
@@ -468,14 +493,14 @@
             if (!currentCityData) return;
 
             let dailyForecastHtml = '<div id="daily-forecast-list">';
-            const forecastDays = currentCityData.forecast.forecastday;
+            const forecastDays = currentCityData.days;
 
-            for (let i = 0; i < forecastDays.length; i++) {
+            for (let i = 0; i < forecastDays.length && i < 10; i++) {
                 const dayData = forecastDays[i];
-                const date = new Date(dayData.date).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric' });
-                const iconUrl = `https:${dayData.day.condition.icon}`;
-                const maxTemp = Math.round(dayData.day.maxtemp_c);
-                const minTemp = Math.round(dayData.day.mintemp_c);
+                const date = new Date(dayData.datetime).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric' });
+                const iconUrl = getCustomWeatherIcon(dayData.icon); // استخدام الأيقونات الجديدة
+                const maxTemp = Math.round(dayData.tempmax);
+                const minTemp = Math.round(dayData.tempmin);
 
                 dailyForecastHtml += `
                     <div class="weather-day" data-day-index="${i}">
@@ -509,23 +534,26 @@
         }
         
         function displayHourlyForecast(dayIndex) {
-            if (!currentCityData) return;
+            if (!currentCityData || !currentCityData.days[dayIndex]) return;
 
-            const dayData = currentCityData.forecast.forecastday[dayIndex];
-            let hourlyForecast = dayData.hour;
+            const dayData = currentCityData.days[dayIndex];
+            let hourlyForecast = dayData.hours;
             
             if (dayIndex == 0) {
                 const currentHour = new Date().getHours();
-                hourlyForecast = hourlyForecast.filter(hour => new Date(hour.time).getHours() >= currentHour);
+                hourlyForecast = hourlyForecast.filter(hour => {
+                    const hourTime = new Date(dayData.datetimeEpoch * 1000 + hour.datetimeEpoch * 1000).getHours();
+                    return hourTime >= currentHour;
+                });
             }
 
             let hourlyHtml = '';
             for (let j = 0; j < hourlyForecast.length; j++) {
                 const hourData = hourlyForecast[j];
-                const time = new Date(hourData.time).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                const temp = Math.round(hourData.temp_c);
-                const iconUrl = `https:${hourData.condition.icon}`; 
-                const description = hourData.condition.text;
+                const time = new Date(dayData.datetimeEpoch * 1000 + hourData.datetimeEpoch * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                const temp = Math.round(hourData.temp);
+                const iconUrl = getCustomWeatherIcon(hourData.icon); // استخدام الأيقونات الجديدة
+                const description = hourData.conditions;
 
                 hourlyHtml += `
                     <div class="weather-hour">
@@ -536,56 +564,41 @@
                 `;
             }
 
-            const maxTemp = Math.round(dayData.day.maxtemp_c);
-            const minTemp = Math.round(dayData.day.mintemp_c);
-            const chanceOfRain = dayData.day.daily_chance_of_rain;
-            const chanceOfSnow = dayData.day.daily_chance_of_snow;
-            const humidity = dayData.day.avghumidity;
-            const uvIndex = dayData.day.uv;
+            const maxTemp = Math.round(dayData.tempmax);
+            const minTemp = Math.round(dayData.tempmin);
+            const chanceOfRain = dayData.precipprob;
+            const chanceOfSnow = dayData.snow;
+            const humidity = dayData.humidity;
+            const uvIndex = dayData.uvindex;
             
-            const totalPrecipitation = dayData.day.totalprecip_mm;
+            const totalPrecipitation = dayData.precip;
             let precipInfo = '';
             if (totalPrecipitation > 0) {
                 precipInfo = `<p>كمية الأمطار: ${totalPrecipitation} ملم</p>`;
             }
 
-            const maxWindKph = dayData.day.maxwind_kph;
-            const windDirection = dayData.day.maxwind_dir;
+            const maxWindKph = dayData.windspeed;
             let windInfo = '';
             if (maxWindKph > 0) {
-                let windDirectionText = '';
-                if (windDirection) {
-                    windDirectionText = `(${windDirection})`;
-                }
-                windInfo = `<p>أقصى سرعة رياح: ${Math.round(maxWindKph)} كم/ساعة ${windDirectionText}</p>`;
+                windInfo = `<p>أقصى سرعة رياح: ${Math.round(maxWindKph)} كم/ساعة</p>`;
             }
 
-            const chanceOfThunder = dayData.day.daily_chance_of_thunder;
+            const chanceOfThunder = dayData.thunder;
             let thunderInfo = '';
-            if (chanceOfThunder > 0) {
-                thunderInfo = `<p>احتمالية عواصف رعدية: ${chanceOfThunder}%</p>`;
+            if (chanceOfThunder) {
+                thunderInfo = `<p>احتمالية عواصف رعدية: نعم</p>`;
             }
-
-            const conditionCode = dayData.day.condition.code;
-            const thunderstormCodes = [1087, 1273, 1276, 1279, 1282];
-            let stormInfo = '';
-            if (thunderstormCodes.includes(conditionCode)) {
-                stormInfo = `<p style="color: #ffea00; font-weight: bold;">⚠️ تحذير: توقعات عواصف رعدية!</p>`;
-            }
-
 
             const fullDayHtml = `
                 <div class="hourly-forecast-container active">
-                    <h3>تفاصيل اليوم: ${new Date(dayData.date).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'short' })}</h3>
+                    <h3>تفاصيل اليوم: ${new Date(dayData.datetime).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'short' })}</h3>
                     <p>الحرارة: ${maxTemp}°C / ${minTemp}°C</p>
                     <p>الرطوبة: ${humidity}%</p>
                     <p>مؤشر الأشعة فوق البنفسجية: ${uvIndex}</p>
-                    ${stormInfo}
                     ${windInfo}
                     ${precipInfo}
-                    ${thunderInfo}
                     <p>فرصة أمطار: ${chanceOfRain}%</p>
-                    <p>فرصة ثلوج: ${chanceOfSnow}%</p>
+                    ${thunderInfo}
                     <div class="hourly-forecast">
                         ${hourlyHtml}
                     </div>
@@ -594,47 +607,23 @@
             document.getElementById('hourly-forecast-details').innerHTML = fullDayHtml;
         }
 
-        function loadWeatherForCity() {
+        // هذه الدالة خاصة بزر البحث فقط
+        function searchWeatherForCity() {
             const city = document.getElementById('city-input').value;
             if (city) {
                 getWeather(city);
-            } else {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(position => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        getWeather(`${lat},${lon}`);
-                    }, error => {
-                        console.error("Geolocation failed, loading Cairo by default.");
-                        getWeather('القاهرة');
-                    });
-                } else {
-                    getWeather('القاهرة');
-                }
             }
         }
 
-        document.getElementById('search-button').addEventListener('click', loadWeatherForCity);
+        document.getElementById('search-button').addEventListener('click', searchWeatherForCity);
         document.getElementById('city-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                loadWeatherForCity();
+                searchWeatherForCity();
             }
         });
-
-        loadWeatherForCity();
-
-        function scheduleDailyUpdate() {
-            const now = new Date();
-            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-            const timeToMidnight = tomorrow.getTime() - now.getTime();
-            
-            setTimeout(() => {
-                loadWeatherForCity();
-                setInterval(loadWeatherForCity, 24 * 60 * 60 * 1000);
-            }, timeToMidnight);
-        }
-
-        scheduleDailyUpdate();
+        
+        // عند فتح الصفحة، يتم استدعاء دالة الطقس للقاهرة مباشرة
+        window.addEventListener('load', () => getWeather('القاهرة'));
     </script>
 </body>
 </html>
